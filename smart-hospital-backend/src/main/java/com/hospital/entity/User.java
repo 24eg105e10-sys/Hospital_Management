@@ -1,16 +1,10 @@
 package com.hospital.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class User {
 
     @Id
@@ -33,7 +27,6 @@ public class User {
     @Column(length = 20)
     private String phone;
 
-    @Builder.Default
     private Boolean active = true;
 
     private LocalDateTime createdAt;
