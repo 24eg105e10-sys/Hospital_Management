@@ -54,4 +54,36 @@ public class AuthService {
         dto.setActive(user.getActive());
         return dto;
     }
+
+    public AuthDto.JwtResponse register(AuthDto.RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email is already registered: " + request.getEmail());
+        }
+
+        User.Role role = User.Role.ADMIN;
+        if (request.getRole() != null) {
+            try {
+                role = User.Role.valueOf(request.getRole().toUpperCase());
+            } catch (Exception ignored) {}
+        }
+
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(role)
+                .phone(request.getPhone())
+                .active(true)
+                .build();
+
+        user = userRepository.save(user);
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = tokenProvider.generateToken(authentication);
+
+        return new AuthDto.JwtResponse(jwt, user.getId(), user.getName(), user.getEmail(), user.getRole().name());
+    }
 }

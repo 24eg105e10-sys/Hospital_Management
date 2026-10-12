@@ -20,6 +20,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<AuthDto.JwtResponse> registerUser(@Valid @RequestBody AuthDto.RegisterRequest registerRequest) {
+        return ResponseEntity.ok(authService.register(registerRequest));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<AuthDto.UserResponse> getCurrentUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
